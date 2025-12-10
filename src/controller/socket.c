@@ -1,5 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
-#include "ctrl_client.h"
+#include "ctrlMessage.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -49,11 +49,9 @@ static int ensure_connected(void) {
 int ctrl_client_init(const char *ip, uint16_t port) {
     memset(&g_addr, 0, sizeof(g_addr));
     g_addr.sin_family = AF_INET;
-    g_addr.sin_port   = htons(port);
-
     if (inet_pton(AF_INET, ip, &g_addr.sin_addr) != 1) return -1;
-
-    return ensure_connected(); // init 때 미리 연결
+    g_addr.sin_port   = htons(port);
+    return ensure_connected(); 
 }
 
 void ctrl_client_close(void) {
@@ -121,11 +119,10 @@ int ctrl_send_laser(uint8_t on) {
 
 
 
-#include "ctrl_client.h"
 #include <stdio.h>
 
 int main(void) {
-    if (ctrl_client_init("192.168.0.50", 9000) != 0) {
+    if (ctrl_client_init("127.0.0.1", 8080) != 0) {
         perror("ctrl_client_init");
         return 1;
     }
@@ -133,7 +130,7 @@ int main(void) {
     ctrl_send_track_start();
     ctrl_send_headlight(255, 80, 0, 50);
     ctrl_send_laser(1);
-    ctrl_send_drive(120, -10);
+    //ctrl_send_drive(120, -10);
     ctrl_send_track_stop();
 
     ctrl_client_close();
