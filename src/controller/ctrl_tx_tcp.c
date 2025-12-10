@@ -1,5 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
-#include "ctrlMessage.h"
+#include "ctrl_tx_tcp.h"
 
 #include <arpa/inet.h>
 #include <errno.h>

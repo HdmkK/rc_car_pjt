@@ -1,5 +1,5 @@
-#ifndef __CTRL_MESSAGE__
-#define __CTRL_MESSAGE__
+#ifndef __CTRL_MESSAGE_H__
+#define __CTRL_MESSAGE_H__
 
 #include <stdint.h>
 
@@ -48,26 +48,5 @@ enum {
     CMD_HEADLIGHT   = 0x13,
     CMD_LASER       = 0x14,
 };
-
-int  ctrl_client_init(const char *ip, uint16_t port);
-void ctrl_client_close(void);
-
-// "구조체 그대로" 전송 (sizeof(Ctrl_Message) 바이트)
-int  ctrl_send_message(const Ctrl_Message *msg);
-
-// 편의 함수들
-int  ctrl_send_track_start(void);
-int  ctrl_send_track_stop(void);
-int  ctrl_send_headlight(uint8_t r, uint8_t g, uint8_t b, uint8_t brightness);
-int  ctrl_send_laser(uint8_t on);
-
-// 상태값 전체/부분 업데이트(외부에서 호출)
-void drive_set_state(int16_t steering_deg, uint8_t gear, uint8_t speed);
-void drive_set_steering(int16_t steering_deg);
-void drive_set_gear(uint8_t gear);
-void drive_set_speed(uint8_t speed);
-
-// (선택) 현재 상태 조회
-Drive_Payload drive_get_state(void);
 
 #endif
