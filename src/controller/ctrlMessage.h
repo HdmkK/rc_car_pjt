@@ -61,4 +61,13 @@ int  ctrl_send_track_stop(void);
 int  ctrl_send_headlight(uint8_t r, uint8_t g, uint8_t b, uint8_t brightness);
 int  ctrl_send_laser(uint8_t on);
 
+// 상태값 전체/부분 업데이트(외부에서 호출)
+void drive_set_state(int16_t steering_deg, uint8_t gear, uint8_t speed);
+void drive_set_steering(int16_t steering_deg);
+void drive_set_gear(uint8_t gear);
+void drive_set_speed(uint8_t speed);
+
+// (선택) 현재 상태 조회
+Drive_Payload drive_get_state(void);
+
 #endif
