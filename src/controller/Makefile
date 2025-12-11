@@ -5,7 +5,7 @@ CFLAGS  := -O2 -Wall -Wextra -pedantic
 LDFLAGS :=
 LDLIBS  := -pthread
 
-TARGETS := ctrl_tx_tcp drive_tx_udp socketReceiver udpReceiver
+TARGETS := ctrl_tx_tcp drive_tx_udp socketReceiver udpReceiver driveRecvAndCanTx
 
 .PHONY: all clean
 all: $(TARGETS)
@@ -23,6 +23,8 @@ socketReceiver: socketReceiver.o
 udpReceiver: udpReceiver.o
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
+driveRecvAndCanTx: driveRecvAndCanTx.o
+	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 # ---- Object build rule ----
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

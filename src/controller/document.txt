@@ -1,0 +1,97 @@
+[모듈]
+drive_tx_udp
+ctrl_tx_tcp
+-----------------------------------------------------------------------
+
+[drive_tx_udp]
+컨트롤러에서 제어메시지를 RC카에 전송하는 모듈
+
+1. 실시간 주행 상태 전송
+- drive_udp_start()로 루프 시작
+- 루프를 돌면서 전역 주행상태를 읽어서 주기적으로 RC카에 전송
+- 외부에서 인터페이스 함수(ex. drive_set_state())를 통해 주행상태값을 갱신
+- drive_udp_stop()로 루프 쓰레드를 종료
+
+
+
+static void sleep_ms(uint32_t ms) 
+: ms 밀리초만큼 실행을 멈추는 함수
+
+static void build_packet(uint8_t out[4], const Drive_Payload *s)
+: Drive_Payload(주행 상태 구조체)를 파싱하여 udp송신을 위해 바이트스트림으로 변환
+
+static void *sender_thread(void *arg)
+: 주행메시지 송신 루프 스레드 핸들러
+
+int drive_udp_start(const char *dest_ip, uint16_t dest_port, uint32_t period_ms)
+: 주행메시지 송신 스레드 생성 및 루프 시작
+
+void drive_udp_stop(void)
+: 주행메시지 송신 루프 스레드 종료
+
+static int16_t clamp_i16(int16_t v, int16_t lo, int16_t hi)
+: 조향각 v를 lo이상 hi이하로 제한
+
+void drive_set_state(int16_t steering_deg, uint8_t gear, uint8_t speed)
+: 주행상태 세팅(조향 각도, 전후진, 속력)
+
+void drive_set_steering(int16_t steering_deg)
+: 주행상태 세팅(조향 각도)
+
+void drive_set_gear(uint8_t gear)
+: 주행상태 세팅(전후진)
+
+void drive_set_speed(uint8_t speed)
+: 주행상태 세팅(속력)
+
+Drive_Payload drive_get_state(void)
+: 현재 주행상태 반환
+
+-----------------------------------------------------------------------
+
+
+[drive_tx_udp]
+컨트롤러에서 제어메시지를 RC카에 전송하는 모듈
+
+1. 실시간 주행 상태 전송
+- drive_udp_start()로 루프 시작
+- 루프를 돌면서 전역 주행상태를 읽어서 주기적으로 RC카에 전송
+- 외부에서 인터페이스 함수(ex. drive_set_state())를 통해 주행상태값을 갱신
+- drive_udp_stop()로 루프 쓰레드를 종료
+
+
+
+static void sleep_ms(uint32_t ms) 
+: ms 밀리초만큼 실행을 멈추는 함수
+
+static void build_packet(uint8_t out[4], const Drive_Payload *s)
+: Drive_Payload(주행 상태 구조체)를 파싱하여 udp송신을 위해 바이트스트림으로 변환
+
+static void *sender_thread(void *arg)
+: 주행메시지 송신 루프 스레드 핸들러
+
+int drive_udp_start(const char *dest_ip, uint16_t dest_port, uint32_t period_ms)
+: 주행메시지 송신 스레드 생성 및 루프 시작
+
+void drive_udp_stop(void)
+: 주행메시지 송신 루프 스레드 종료
+
+static int16_t clamp_i16(int16_t v, int16_t lo, int16_t hi)
+: 조향각 v를 lo이상 hi이하로 제한
+
+void drive_set_state(int16_t steering_deg, uint8_t gear, uint8_t speed)
+: 주행상태 세팅(조향 각도, 전후진, 속력)
+
+void drive_set_steering(int16_t steering_deg)
+: 주행상태 세팅(조향 각도)
+
+void drive_set_gear(uint8_t gear)
+: 주행상태 세팅(전후진)
+
+void drive_set_speed(uint8_t speed)
+: 주행상태 세팅(속력)
+
+Drive_Payload drive_get_state(void)
+: 현재 주행상태 반환
+
+-----------------------------------------------------------------------
