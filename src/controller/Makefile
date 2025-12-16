@@ -5,35 +5,65 @@ CFLAGS  := -O2 -Wall -Wextra -pedantic
 LDFLAGS :=
 LDLIBS  := -pthread
 
-TARGETS := ctrl_tx_tcp drive_tx_udp socketReceiver udpReceiver driveRecvAndCanTx
+# Output directories
+BUILD_DIR := build
+BIN_DIR   := $(BUILD_DIR)/bin
+OBJ_DIR   := $(BUILD_DIR)/obj
 
-.PHONY: all clean
-all: $(TARGETS)
+# Program names (keep as before)
+TARGETS := ctrl_tx_tcp drive_tx_udp socketReceiver udpReceiver driveRecvAndCanTx gateway
 
-# ---- Executables ----
-ctrl_tx_tcp: ctrl_tx_tcp.o
+# Actual built binaries go to build/bin
+BIN_TARGETS := $(addprefix $(BIN_DIR)/,$(TARGETS))
+
+.PHONY: all clean $(TARGETS)
+all: $(BIN_TARGETS)
+
+# ---- Phony wrappers (so `make gateway` still works) ----
+$(TARGETS): %: $(BIN_DIR)/%
+
+# ---- Link rules (binaries in build/bin) ----
+$(BIN_DIR)/ctrl_tx_tcp: $(OBJ_DIR)/ctrl_tx_tcp.o | $(BIN_DIR)
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
-drive_tx_udp: drive_tx_udp.o
+$(BIN_DIR)/drive_tx_udp: $(OBJ_DIR)/drive_tx_udp.o | $(BIN_DIR)
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
-socketReceiver: socketReceiver.o
+$(BIN_DIR)/socketReceiver: $(OBJ_DIR)/socketReceiver.o | $(BIN_DIR)
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
-udpReceiver: udpReceiver.o
+$(BIN_DIR)/udpReceiver: $(OBJ_DIR)/udpReceiver.o | $(BIN_DIR)
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
-driveRecvAndCanTx: driveRecvAndCanTx.o
+$(BIN_DIR)/driveRecvAndCanTx: $(OBJ_DIR)/driveRecvAndCanTx.o | $(BIN_DIR)
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
-# ---- Object build rule ----
-%.o: %.c
+
+$(BIN_DIR)/gateway: $(OBJ_DIR)/gateway.o | $(BIN_DIR)
+	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
+
+# ---- Object build rule (objects in build/obj) ----
+# Also generate dependency files (.d)
+CFLAGS += -MMD -MP
+
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# ---- Header dependencies ----
-ctrl_tx_tcp.o: ctrl_tx_tcp.h ctrl_protocol.h
-drive_tx_udp.o: drive_tx_udp.h ctrl_protocol.h
-socketReceiver.o: ctrl_protocol.h
-# udpReceiver.o: (no deps)
+# ---- Ensure directories exist ----
+$(BIN_DIR):
+	mkdir -p $@
+
+$(OBJ_DIR):
+	mkdir -p $@
+
+# ---- Header dependencies (optional; .d handles most of it) ----
+$(OBJ_DIR)/ctrl_tx_tcp.o: ctrl_tx_tcp.h ctrl_protocol.h
+$(OBJ_DIR)/drive_tx_udp.o: drive_tx_udp.h ctrl_protocol.h
+$(OBJ_DIR)/socketReceiver.o: ctrl_protocol.h
+$(OBJ_DIR)/gateway.o: ctrl_protocol.h
+# udpReceiver / driveRecvAndCanTx deps are handled by auto .d
+
+# ---- Include auto-generated dependency files ----
+-include $(wildcard $(OBJ_DIR)/*.d)
 
 clean:
-	rm -f $(TARGETS) *.o *.a *.so *.d
+	rm -rf $(BUILD_DIR)

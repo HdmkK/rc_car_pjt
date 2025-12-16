@@ -1,4 +1,3 @@
-#define _POSIX_C_SOURCE 200809L
 #include "ctrl_tx_tcp.h"
 
 #include <arpa/inet.h>
@@ -122,7 +121,7 @@ int ctrl_send_laser(uint8_t on) {
 #include <stdio.h>
 
 int main(void) {
-    if (ctrl_client_init("127.0.0.1", 8080) != 0) {
+    if (ctrl_client_init("127.0.0.1", 8081) != 0) {
         perror("ctrl_client_init");
         return 1;
     }

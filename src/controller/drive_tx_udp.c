@@ -1,4 +1,3 @@
-#define _POSIX_C_SOURCE 200809L
 #include "drive_tx_udp.h"
 
 #include <arpa/inet.h>
@@ -29,11 +28,16 @@ static void sleep_ms(uint32_t ms) {
 
 static void build_packet(uint8_t out[4], const Drive_Payload *s) {
     // wire format: steering(int16 BE) + gear + speed => 4 bytes
-    uint16_t be = htons((uint16_t)s->steering_deg); // 음수도 2's complement 그대로 전송됨
+    printf("steering : %d\n", s->steering_deg);
+    //int16_t be = htons((int16_t)s->steering_deg); // 음수도 2's complement 그대로 전송됨
+    int16_t be = s->steering_deg;
+    printf("test : %d\n", be);
     out[0] = (uint8_t)((be >> 8) & 0xFF);
     out[1] = (uint8_t)(be & 0xFF);
     out[2] = s->gear;
     out[3] = s->speed;
+
+     printf("out = %02X %02X\n", out[0], out[1]);
 }
 
 static void *sender_thread(void *arg) {
